@@ -9,6 +9,7 @@ export interface Context {
   transaction_id: string;
   city: string;
   state: string;
+  domain?: string;
 }
 
 export interface Message {
