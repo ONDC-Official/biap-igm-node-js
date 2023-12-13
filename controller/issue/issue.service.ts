@@ -124,11 +124,12 @@ class IssueService {
 
       const contextFactory = new ContextFactory();
       const context = contextFactory.create({
+        domain: requestContext?.domain,
         action: PROTOCOL_CONTEXT.ISSUE,
         transactionId: requestContext?.transaction_id,
         bppId: issue?.bppId,
         bpp_uri: issue?.bpp_uri,
-        city: requestContext?.city, 
+        city: requestContext?.city,
         state: requestContext?.state,
       });
 
@@ -192,7 +193,6 @@ class IssueService {
         ...imageUri
       );
 
-
       const issueRequests = await this.addComplainantAction(issue);
 
       const bppResponse: any = await bppIssueService.issue(
@@ -209,14 +209,20 @@ class IssueService {
         );
         logger.info("Created issue in database");
       }
-        if (process.env.BUGZILLA_API_KEY || process.env.SELECTED_ISSUE_CRM === TRUDESK) {
-          console.log('process.env.bugzilla=======', process.env.BUGZILLA_API_KEY)
-          bugzillaService.createIssueInBugzilla(
-            issueRequests,
-            requestContext,
-            issueRequests?.issue_actions
-          );
-        }
+      if (
+        process.env.BUGZILLA_API_KEY ||
+        process.env.SELECTED_ISSUE_CRM === TRUDESK
+      ) {
+        console.log(
+          "process.env.bugzilla=======",
+          process.env.BUGZILLA_API_KEY
+        );
+        bugzillaService.createIssueInBugzilla(
+          issueRequests,
+          requestContext,
+          issueRequests?.issue_actions
+        );
+      }
       return bppResponse;
     } catch (err) {
       throw err;
@@ -277,7 +283,10 @@ class IssueService {
   async onIssueOrder(messageId: string) {
     try {
       const protocolIssueResponse = await onIssueOrder(messageId);
-      console.log('protocolIssueResponse==================', protocolIssueResponse)
+      console.log(
+        "protocolIssueResponse==================",
+        protocolIssueResponse
+      );
       if (
         !(protocolIssueResponse && protocolIssueResponse.length) ||
         protocolIssueResponse?.[0]?.error
@@ -314,13 +323,16 @@ class IssueService {
           issue
         );
 
-          if (process.env.BUGZILLA_API_KEY || process.env.SELECTED_ISSUE_CRM == "trudesk") {
-            bugzillaService.updateIssueInBugzilla(
-              protocolIssueResponse?.[0]?.context?.transaction_id,
-              issue.issue_actions
-            );
-          }
-        
+        if (
+          process.env.BUGZILLA_API_KEY ||
+          process.env.SELECTED_ISSUE_CRM == "trudesk"
+        ) {
+          bugzillaService.updateIssueInBugzilla(
+            protocolIssueResponse?.[0]?.context?.transaction_id,
+            issue.issue_actions
+          );
+        }
+
         return this.transform(protocolIssueResponse?.[0]);
       }
     } catch (err) {
