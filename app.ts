@@ -5,14 +5,12 @@ import loadEnvVariables from "./utils/envHelper";
 import issueRoutes from "./routes/issue";
 import issue_statusRoutes from "./routes/issue_status";
 import sseRoutes from "./routes/sse";
-// import initializeFirebase from "./lib/firebase/initializeFirebase";
 
 const createServer = (): express.Application => {
   const app: Application = express();
 
   // initialize environment variables
   loadEnvVariables();
-  // initializeFirebase();
   // Body parsing Middleware
   app.use(express.json({ limit: "50mb" }));
   app.use(bodyParser.json());
