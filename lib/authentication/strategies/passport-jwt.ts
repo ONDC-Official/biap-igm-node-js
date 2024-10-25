@@ -5,7 +5,12 @@ import { HEADERS } from '../../../utils/constants';
 import { Request } from 'express';
 
 const JwtStrategy = passportJWT.Strategy;
-const secret: any = process.env.JWT_TOKEN_SECRET || 12345;
+console.log(process.env.JWT_TOKEN_PUBLIC_KEY,"=process.env.JWT_TOKEN_PUBLIC_KEY=")
+if (!process.env.JWT_TOKEN_PUBLIC_KEY) {
+    throw new Error('JWT public key is not defined');
+}
+const secret: any = process.env.JWT_TOKEN_PUBLIC_KEY.replace(/\\n/g,'\n');
+console.log(secret,"==secret");
 
 const tokenExtractor = (req: Request): any => {
     const token = req.get(HEADERS.ACCESS_TOKEN) || null;
