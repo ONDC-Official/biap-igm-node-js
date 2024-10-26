@@ -35,9 +35,10 @@ const passportJwtStrategy = new JwtStrategy(
     async (req:any,jwtPayload: any, done: any) => {
         try {
             let user: any = {};
+            console.log(jwtPayload,"==jwtPayload")
             if (jwtPayload.user) {
                 user = jwtPayload.user;
-                user.isGuest = jwtPayload.isGuest;
+                // user.isGuest = jwtPayload.isGuest;
             } else if (jwtPayload.userId) {
                 const userIdFromReq = req.userId;
                 console.log(userIdFromReq,"userIdFromReq")
