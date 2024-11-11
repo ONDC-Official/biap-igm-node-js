@@ -11,7 +11,6 @@ import {
   IParamProps,
   IssueProps,
   IssueRequest,
-  UserDetails,
 } from "../../interfaces/issue";
 import BugzillaService from "../../controller/bugzilla/bugzilla.service";
 import { onIssueOrder } from "../../utils/protocolApis";
@@ -231,7 +230,7 @@ class IssueService {
    * Issue
    * @param {Object} issueRequest
    */
-  async createIssue(issueRequest: IssueRequest, userDetails: UserDetails) {
+  async createIssue(issueRequest: IssueRequest, userDetails: any) {
     try {
       const { context: requestContext, message }: IssueRequest = issueRequest;
       const issue: IssueProps = message.issue;
@@ -327,7 +326,7 @@ class IssueService {
       if (bppResponse?.context) {
         await this.createIssueInDatabase(
           issueRequests,
-          userDetails?.userId,
+          userDetails?.user,
           bppResponse?.context?.message_id,
           bppResponse?.context?.transaction_id,
           requestContext?.domain
@@ -352,17 +351,17 @@ class IssueService {
     }
   }
 
-  async findIssues(user: UserDetails, params: IParamProps) {
+  async findIssues(user: any, params: IParamProps) {
     try {
       let { limit = 10, pageNumber = 1 } = params;
 
       let skip = (pageNumber - 1) * limit;
-      const issues = await Issue.find({ userId: user?.userId })
+      const issues = await Issue.find({ userId: user?.user })
         .sort({ created_at: -1 })
         .limit(limit)
         .skip(skip);
       const totalCount = await Issue.countDocuments({
-        userId: user?.userId,
+        userId: user?.user,
       });
 
       return { issues, totalCount };
@@ -377,7 +376,7 @@ class IssueService {
    * @param {Object} user
    */
 
-  async getIssuesList(user: UserDetails, params: IParamProps) {
+  async getIssuesList(user: any, params: IParamProps) {
     try {
       const { issues, totalCount } = await this.findIssues(user, params);
       if (!issues.length) {
